@@ -1,8 +1,11 @@
 package com.example.lab5_notes;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,9 +20,12 @@ public class MainActivity2 extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
 
+        //display welcome message. Fetch username from SharedPreferences
         welcomeMessage = (TextView) findViewById(R.id.welcomeMessage);
-        Intent intent = getIntent();
-        String str = intent.getStringExtra("message");
+        SharedPreferences prefs = getSharedPreferences("com.example.lab5_notes", Context.MODE_PRIVATE);
+        String str = prefs.getString(MainActivity.usernameKey, "");
+        //Intent intent = getIntent();
+        //String str = intent.getStringExtra("message");
         welcomeMessage.setText("Welcome " +str +"!");
     }
 
@@ -31,18 +37,17 @@ public class MainActivity2 extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        //handle item selection
-        switch(item.getItemId()) {
-            case R.id.logout:
-                goToActivity1();
-                return true;
-            case R.id.addNote:
-
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        super.onOptionsItemSelected(item);
+        if(item.getItemId() == R.id.logout) {
+            //Erase username from shared preferences
+            Intent intent = new Intent(this, MainActivity.class);
+            SharedPreferences sharedPreferences = getSharedPreferences("com.example.lab5_notes", Context.MODE_PRIVATE);
+            sharedPreferences.edit().remove(MainActivity.usernameKey).apply();
+            startActivity(intent);
+            return true;
         }
+        return true;
     }
 
     public void goToActivity1() {
